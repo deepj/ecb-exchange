@@ -16,9 +16,8 @@ class App < Roda
   route do |r|
     r.post 'exchange' do
       exchange_service = ExchangeService.new
-      prepared_params = params.is_a?(Hash) ? params : {}
 
-      exchange_service.call(prepared_params) do |result|
+      exchange_service.call(params) do |result|
         result.success { |value| value }
         result.failure do |error|
           response.status = 422

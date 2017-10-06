@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Only for local development purposes
-
-createuser -e -U postgres mh-assignment
-createdb -U postgres -O mh-assignment leadfeeder-martin-assignment_development
-createdb -U postgres -O mh-assignment leadfeeder-martin-assignment_test
