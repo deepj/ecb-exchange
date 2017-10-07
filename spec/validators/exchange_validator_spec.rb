@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../validators/exchange_validator'
+require 'validators/exchange_validator'
 
 RSpec.describe ExchangeValidator, type: :validator do
   subject(:validator) { described_class }

@@ -6,6 +6,9 @@ AllCops:
     - '**/Rakefile'
     - '**/config.ru'
 
+  Exclude:
+    - 'db/schema.rb'
+
 Documentation:
   Enabled: false
 

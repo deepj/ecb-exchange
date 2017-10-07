@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'services/exchange_service'
-require_relative '../support/shared_contexts/exchange_rates_with_weekdays_context'
+require 'support/shared_contexts/exchange_rates_with_weekdays_context'
 
 RSpec.describe ExchangeService, type: :service do
   include_context 'exchange rates with weekdays'
@@ -12,7 +12,7 @@ RSpec.describe ExchangeService, type: :service do
 
   it 'returns a given exchanged amount for given date' do
     expect(service).to be_success
-    expect(service.value).to include(amount: '167.484', date: '2011-03-05')
+    expect(service.value).to include(amount: '85.9784', date: '2011-03-05')
   end
 
   context 'when params are invalid' do
@@ -22,6 +22,17 @@ RSpec.describe ExchangeService, type: :service do
     it 'returns an error validation message' do
       expect(service).to be_failure
       expect(service.value).to include(date: [matching('must be greater')])
+    end
+  end
+
+  context 'when params are missing' do
+    let(:params)               { nil }
+    let!(:exchange_rates_seed) {}
+
+    it 'returns an error validation message' do
+      expect(service).to be_failure
+      expect(service.value).to include(date: [matching('is missing')],
+                                       amount: [matching('is missing'), matching('must be greater than 0')])
     end
   end
 

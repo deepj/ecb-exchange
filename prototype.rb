@@ -11,9 +11,9 @@ gemfile do
   source 'https://rubygems.org'
 
   gem 'down',           '4.1.0'
-  gem 'dry-validation', '0.11.0'
+  gem 'dry-validation', '0.11.1'
   gem 'pg',             '0.21.0'
-  gem 'sequel',         '5.0.0'
+  gem 'sequel',         '5.1.0'
   gem 'sequel_pg',      '1.7.1', require: 'sequel'
 end
 
@@ -60,18 +60,15 @@ DB.create_table?(:exchange_rates) do
   BigDecimal :rate, size: [8, 4]
 end
 
-# DB[:exchange_rates].delete
-# binding.irb
-
 ecb_exchange_csv = Down.open('https://sdw.ecb.europa.eu/quickviewexport.do?SERIES_KEY=120.EXR.D.USD.EUR.SP00.A&type=csv')
 
 # We want to stream csv data while importing them into the database
-ecb_exchange_stream = Enumerator.new { |yielder|
+ecb_exchange_stream = Enumerator.new do |yielder|
   loop do
     yielder << ecb_exchange_csv.gets
     break if ecb_exchange_csv.eof?
   end
-}.lazy
+end.lazy
 
 row_match   = /\A(2\d{3})-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])/
 invalid_row = /\A(1\d{3})|(-[\r\n]{,2})\z/
@@ -95,7 +92,7 @@ DB.transaction do
 
   # NOTE: if processed_data are imported (streamed), use ecb_exchange_stream.rewind if you want to work with them again
   DB.copy_into(temporary_table, data: processed_data, format: :csv)
-  # Import data from the temporary
+  # Import data from the temporary table
   DB[:exchange_rates].insert_conflict.insert(DB[temporary_table])
 end
 
@@ -104,7 +101,7 @@ convert_exchange = lambda do |amount, date|
   return validator.messages(full: true) if validator.failure?
   converted_amount = DB[:exchange_rates].where { date <= validator.output[:date].to_s }
                                         .reverse_order(:date)
-                                        .get { (rate * validator.output[:amount]) }
+                                        .get { round(validator.output[:amount] / rate, 4) }
   converted_amount ? converted_amount.to_s('F') : 'Unexpected state :('
 end
 

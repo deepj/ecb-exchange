@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../support/shared_contexts/exchange_rates_with_weekdays_context'
+require 'support/shared_contexts/exchange_rates_with_weekdays_context'
 
 RSpec.describe App, type: :request do
   include_context 'exchange rates with weekdays'
@@ -22,7 +22,7 @@ RSpec.describe App, type: :request do
     end
 
     it 'returns a newly created user response' do
-      expect(json_response).to include(amount: '167.484', date: '2011-03-05')
+      expect(json_response).to include(amount: '85.9784', date: '2011-03-05')
     end
 
     context 'when params are not valid' do
@@ -32,8 +32,8 @@ RSpec.describe App, type: :request do
         expect(last_response).to have_status_code(422)
         expect(last_response).to have_content_type('application/json')
         expect(json_response).to include(error:
-          a_hash_including(date: [matching('must be filled')],
-                           amount: [matching('must be filled'), matching('must be greater than 0')]))
+          a_hash_including(date: [matching('is missing')],
+                           amount: [matching('is missing'), matching('must be greater than 0')]))
       end
     end
   end

@@ -7,14 +7,15 @@ class ExchangeService < ApplicationService
   step :convert
 
   def validate(input)
-    validator = ExchangeValidator.(amount: input[:amount], date: input[:date])
+    input = input.is_a?(Hash) ? input : {}
+    validator = ExchangeValidator.(input)
     validator.success? ? Right(validator.output) : Left(validator.messages)
   end
 
   def convert(input)
     converted_amount = DB[:exchange_rates].where { date <= input[:date].to_s }
                                           .order(Sequel.desc(:date))
-                                          .get { (rate * input[:amount]) }
+                                          .get { round(input[:amount] / rate, 4) }
 
     if converted_amount
       Right(amount: converted_amount.to_s('F'), date: input[:date].to_s)

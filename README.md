@@ -10,7 +10,6 @@
 
 Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 9.6.5 using Homebrew)
 
-
 ```
 createuser -U postgres mh-assignment
 createdb -U postgres -O mh-assignment leadfeeder-martin-assignment
@@ -23,7 +22,7 @@ bundle exec rake db:migrate
 bundle exec rake db:migrate RACK_ENV=test
 ```
 
-The current ECB exchange rate list can be imported using
+The current ECB exchange rate list can be imported using this rake task:
 
 ```
 rake import
@@ -35,7 +34,7 @@ RSpec tests can be run as usual (please, run `bundle exec rake db:migrate RACK_E
 bundle exec rspec
 ```
 
-In case of API only POST /exchanges is treated against some user mistakes. It's not proof-bullied API implementation.
+In case of API only POST /exchanges is treated against some user mistakes. It's not bullet-proof API implementation.
 
 
 API can be run:
