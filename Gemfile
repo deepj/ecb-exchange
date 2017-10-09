@@ -28,7 +28,7 @@ end
 
 group :test do
   gem 'vcr',              '3.0.3'
-  gem 'webmock',          '3.0.1'
+  gem 'webmock',          '3.1.0'
   gem 'rspec',            '3.6.0'
   gem 'rack-test',        '0.7.0'
   gem 'json-schema',      '2.8.0'
