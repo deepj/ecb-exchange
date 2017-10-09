@@ -2,11 +2,11 @@
 
 ENV['DATABASE_URL'] ||= case ENV['RACK_ENV']
                         when 'test'
-                          'postgres:///leadfeeder-martin-assignment_test?user=mh-assignment'
+                          'postgres:///ecb-exchange_test?user=mh'
                         when 'production'
-                          'postgres:///leadfeeder-martin-assignment_production?user=mh-assignment'
+                          'postgres:///ecb-exchange_production?user=mh'
                         else
-                          'postgres:///leadfeeder-martin-assignment_development?user=mh-assignment'
+                          'postgres:///ecb-exchange_development?user=mh'
                         end
 
 DB = Sequel.connect(ENV.delete('DATABASE_URL'))

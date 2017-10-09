@@ -11,8 +11,9 @@
 Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 9.6.5 using Homebrew)
 
 ```
-createuser -U postgres mh-assignment
-createdb -U postgres -O mh-assignment leadfeeder-martin-assignment
+createuser -U postgres mh
+createdb -U postgres -O mh ecb-exchange_development
+createdb -U postgres -O mh ecb-exchange_test
 ```
 
 After then, just run these two commands:

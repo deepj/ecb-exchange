@@ -2,7 +2,7 @@
 
 require 'lib/ecb_exchange_rates/fetcher'
 
-RSpec.describe ECBExchangeRates::Fetcher, :vcr, type: :lib do
+RSpec.describe ECBExchangeRates::Fetcher, vcr: { cassette_name: 'ecb-exchange' }, type: :lib do
   subject(:stream) { fetcher.call }
 
   let(:fetcher) { described_class.new }
@@ -22,7 +22,7 @@ RSpec.describe ECBExchangeRates::Fetcher, :vcr, type: :lib do
     end
   end
 
-  context 'when the source url cannot be found' do
+  context 'when the source url cannot be found', vcr: { cassette_name: 'ecb-exchange-invalid-url' } do
     subject(:stream) { described_class.new.call('https://sdw.ecb.europa.eu/quickvieort.do') }
 
     it 'returns the not_found error code' do

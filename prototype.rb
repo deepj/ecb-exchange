@@ -4,8 +4,8 @@ require 'bundler/inline'
 
 # Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 9.6.5 using Homebrew)
 #
-# createuser -U postgres mh-assignment
-# createdb -U postgres -O mh-assignment leadfeeder-martin-assignment
+# createuser -U postgres mh
+# createdb -U postgres -O mh ecb-exchange
 
 gemfile do
   source 'https://rubygems.org'
@@ -50,7 +50,7 @@ ExchangeValidator = Dry::Validation.Form do
   end
 end
 
-DATABASE_URL = 'postgres:///leadfeeder-martin-assignment?user=mh-assignment'
+DATABASE_URL = 'postgres:///ecb-exchange?user=mh'
 
 DB = Sequel.connect(DATABASE_URL)
 DB.loggers << Logger.new($stdout)
@@ -83,7 +83,7 @@ processed_data = ecb_exchange_stream
 temporary_table = :exchange_rates_import
 
 DB.transaction do
-  # Each import is made into a own temporary table
+  # Each import is made into an own temporary table
   DB.run %(CREATE TEMPORARY TABLE "#{temporary_table}" (LIKE "exchange_rates") ON COMMIT DROP)
   # DB.create_table temporary_table, temp: true, on_commit: :drop do
   #   primary_key :date, type: :Date
