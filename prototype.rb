@@ -10,7 +10,7 @@ require 'bundler/inline'
 gemfile do
   source 'https://rubygems.org'
 
-  gem 'down',           '4.1.0'
+  gem 'down',           '4.1.1'
   gem 'dry-validation', '0.11.1'
   gem 'pg',             '0.21.0'
   gem 'sequel',         '5.1.0'
