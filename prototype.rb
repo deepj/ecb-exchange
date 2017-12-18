@@ -13,8 +13,8 @@ gemfile do
   gem 'down',           '4.1.1'
   gem 'dry-validation', '0.11.1'
   gem 'pg',             '0.21.0'
-  gem 'sequel',         '5.1.0'
-  gem 'sequel_pg',      '1.7.1', require: 'sequel'
+  gem 'sequel',         '5.3.0'
+  gem 'sequel_pg',      '1.8.1', require: 'sequel'
 end
 
 require 'irb'
