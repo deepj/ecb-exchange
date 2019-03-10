@@ -22,15 +22,19 @@ RSpec.configure do |config|
 
   config.when_first_matching_example_defined(type: :request) do
     require 'rack/test'
-    config.include Rack::Test::Methods, type: :request
+
     require_relative 'support/api_helpers'
-    config.include APIHelpers, type: :request
     require_relative 'support/matchers/be_error'
     require_relative 'support/matchers/have_body'
     require_relative 'support/matchers/have_content_type'
     require_relative 'support/matchers/have_status_code'
     require_relative 'support/matchers/match_json_schema'
+
+    config.include Rack::Test::Methods, type: :request
+    config.include APIHelpers, type: :request
   end
+
+  config.include Dry::Monads::Result::Mixin
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
   config.filter_run_when_matching :focus

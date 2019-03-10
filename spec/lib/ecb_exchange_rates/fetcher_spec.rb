@@ -9,16 +9,16 @@ RSpec.describe ECBExchangeRates::Fetcher, vcr: { cassette_name: 'ecb-exchange' }
 
   it 'returns CSV stream' do
     expect(stream).to be_success
-    expect(stream.value).to be_a(Enumerator::Lazy)
-    expect(stream.value.first).to include('Data Source in SDW: null')
+    expect(stream.value!).to be_a(Enumerator::Lazy)
+    expect(stream.value!.first).to include('Data Source in SDW: null')
   end
 
   context 'when the source url is invalid' do
-    subject(:stream) { described_class.new.call(nil) }
+    subject(:stream) { described_class.new.call('') }
 
     it 'returns the not_found error code' do
       expect(stream).to be_failure
-      expect(stream.value).to eq(:not_found)
+      expect(stream).to eq Failure(:not_found)
     end
   end
 
@@ -27,7 +27,7 @@ RSpec.describe ECBExchangeRates::Fetcher, vcr: { cassette_name: 'ecb-exchange' }
 
     it 'returns the not_found error code' do
       expect(stream).to be_failure
-      expect(stream.value).to eq(:not_found)
+      expect(stream).to eq Failure(:not_found)
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe ECBExchangeRates::Fetcher, vcr: { cassette_name: 'ecb-exchange' }
 
     it 'returns the source_failure error code' do
       expect(stream).to be_failure
-      expect(stream.value).to eq(:source_failure)
+      expect(stream).to eq Failure(:source_failure)
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe ECBExchangeRates::Fetcher, vcr: { cassette_name: 'ecb-exchange' }
 
       it 'returns the invalid_csv error code' do
         expect(stream).to be_failure
-        expect(stream.value).to eq(:invalid_csv)
+        expect(stream).to eq Failure(:invalid_csv)
       end
     end
 
@@ -57,7 +57,7 @@ RSpec.describe ECBExchangeRates::Fetcher, vcr: { cassette_name: 'ecb-exchange' }
 
       it 'returns the invalid_csv error code' do
         expect(stream).to be_failure
-        expect(stream.value).to eq(:invalid_csv)
+        expect(stream).to eq Failure(:invalid_csv)
       end
     end
   end

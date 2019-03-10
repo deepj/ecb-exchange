@@ -2,27 +2,28 @@
 
 require 'bundler/inline'
 
-# Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 9.6.5 using Homebrew)
+# Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 11 using Homebrew)
 #
-# createuser -U postgres mh
-# createdb -U postgres -O mh ecb-exchange
+# createdb -U postgres ecb-exchange_prototype
+
+DATABASE_URL     = 'postgres://postgres:postgres@localhost:5432/ecb-exchange_prototype'
+ECB_EXCHANGE_CSV = 'https://sdw.ecb.europa.eu/quickviewexport.do?SERIES_KEY=120.EXR.D.USD.EUR.SP00.A&type=csv'
 
 gemfile do
   source 'https://rubygems.org'
 
-  gem 'down',           '4.1.1'
-  gem 'dry-validation', '0.11.1'
-  gem 'pg',             '0.21.0'
-  gem 'sequel',         '5.3.0'
-  gem 'sequel_pg',      '1.8.1', require: 'sequel'
+  gem 'down',           '4.8.0'
+  gem 'dry-validation', '0.13.0'
+  gem 'pg',             '1.1.4'
+  gem 'sequel',         '5.18.0'
+  gem 'sequel_pg',      '1.12.0', require: 'sequel'
 end
 
-require 'irb'
 require 'securerandom'
 require 'logger'
 require 'dry/validation'
 
-ExchangeValidator = Dry::Validation.Form do
+ExchangeValidator = Dry::Validation.Params do
   configure do
     option :date_since, 2000
 
@@ -50,17 +51,16 @@ ExchangeValidator = Dry::Validation.Form do
   end
 end
 
-DATABASE_URL = 'postgres:///ecb-exchange?user=mh'
+logger = Logger.new($stdout)
 
-DB = Sequel.connect(DATABASE_URL)
-DB.loggers << Logger.new($stdout)
+DB = Sequel.connect(DATABASE_URL, logger: logger)
 
 DB.create_table?(:exchange_rates) do
-  primary_key :date, type: :Date
+  Date :date, primary_key: true
   BigDecimal :rate, size: [8, 4]
 end
 
-ecb_exchange_csv = Down.open('https://sdw.ecb.europa.eu/quickviewexport.do?SERIES_KEY=120.EXR.D.USD.EUR.SP00.A&type=csv')
+ecb_exchange_csv = Down.open(ECB_EXCHANGE_CSV)
 
 # We want to stream csv data while importing them into the database
 ecb_exchange_stream = Enumerator.new do |yielder|
@@ -85,10 +85,6 @@ temporary_table = :exchange_rates_import
 DB.transaction do
   # Each import is made into an own temporary table
   DB.run %(CREATE TEMPORARY TABLE "#{temporary_table}" (LIKE "exchange_rates") ON COMMIT DROP)
-  # DB.create_table temporary_table, temp: true, on_commit: :drop do
-  #   primary_key :date, type: :Date
-  #   BigDecimal :rate, size: [8, 4]
-  # end
 
   # NOTE: if processed_data are imported (streamed), use ecb_exchange_stream.rewind if you want to work with them again
   DB.copy_into(temporary_table, data: processed_data, format: :csv)
@@ -98,7 +94,9 @@ end
 
 convert_exchange = lambda do |amount, date|
   validator = ExchangeValidator.(amount: amount, date: date)
+
   return validator.messages(full: true) if validator.failure?
+
   converted_amount = DB[:exchange_rates].where { date <= validator.output[:date].to_s }
                                         .reverse_order(:date)
                                         .get { round(validator.output[:amount] / rate, 4) }

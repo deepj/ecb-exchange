@@ -2,12 +2,14 @@
 
 ENV['DATABASE_URL'] ||= case ENV['RACK_ENV']
                         when 'test'
-                          'postgres:///ecb-exchange_test?user=mh'
+                          'postgres://postgres:postgres@localhost:5432/ecb-exchange_test'
                         when 'production'
-                          'postgres:///ecb-exchange_production?user=mh'
+                          'postgres://postgres:postgres@localhost:5432/ecb-exchange_production'
                         else
-                          'postgres:///ecb-exchange_development?user=mh'
+                          'postgres://postgres:postgres@localhost:5432/ecb-exchange_development'
                         end
 
-DB = Sequel.connect(ENV.delete('DATABASE_URL'))
+DATABASE_URL = ENV.delete('DATABASE_URL')
+
+DB = Sequel.connect(DATABASE_URL)
 DB.loggers << Logger.new($stdout) if ENV['RACK_ENV'] == 'development'

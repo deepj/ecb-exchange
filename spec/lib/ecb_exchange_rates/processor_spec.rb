@@ -22,25 +22,25 @@ RSpec.describe ECBExchangeRates::Processor, type: :lib do
 
   it 'returns a processed stream' do
     expect(processor).to be_success
-    expect(processor.value).to be_a(Enumerator::Lazy)
-    expect(processor.value.force).to match([
-                                             including('2017-09-01,1.1920'),
-                                             including('2017-08-31,1.1825'),
-                                             including('2017-08-30,1.1916'),
-                                             including('2017-08-29,1.2048')
-                                           ])
+    expect(processor.value!).to be_a(Enumerator::Lazy)
+    expect(processor.value!).to match([
+                                        including('2017-09-01,1.1920'),
+                                        including('2017-08-31,1.1825'),
+                                        including('2017-08-30,1.1916'),
+                                        including('2017-08-29,1.2048')
+                                      ])
   end
 
   context 'when there are CSV headers in a stream' do
     it 'removes CSV headers' do
       expect(processor).to be_success
-      expect(processor.value).to be_a(Enumerator::Lazy)
-      expect(processor.value.force).to match([
-                                               including('2017-09-01,1.1920'),
-                                               including('2017-08-31,1.1825'),
-                                               including('2017-08-30,1.1916'),
-                                               including('2017-08-29,1.2048')
-                                             ])
+      expect(processor.value!).to be_a(Enumerator::Lazy)
+      expect(processor.value!).to match([
+                                          including('2017-09-01,1.1920'),
+                                          including('2017-08-31,1.1825'),
+                                          including('2017-08-30,1.1916'),
+                                          including('2017-08-29,1.2048')
+                                        ])
     end
   end
 
@@ -64,15 +64,15 @@ RSpec.describe ECBExchangeRates::Processor, type: :lib do
 
     it 'removes CSV headers' do
       expect(processor).to be_success
-      expect(processor.value).to be_a(Enumerator::Lazy)
-      expect(processor.value.force).to match([
-                                               including('2017-09-01,1.1920'),
-                                               including('2017-08-31,1.1825'),
-                                               including('2001-01-02,0.9423'),
-                                               including('2000-12-29,0.9305'),
-                                               including('2000-12-27,0.9310'),
-                                               including('2000-12-22,0.9240')
-                                             ])
+      expect(processor.value!).to be_a(Enumerator::Lazy)
+      expect(processor.value!).to match([
+                                          including('2017-09-01,1.1920'),
+                                          including('2017-08-31,1.1825'),
+                                          including('2001-01-02,0.9423'),
+                                          including('2000-12-29,0.9305'),
+                                          including('2000-12-27,0.9310'),
+                                          including('2000-12-22,0.9240')
+                                        ])
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.describe ECBExchangeRates::Processor, type: :lib do
 
     it 'returns the stream_processing_failed error code' do
       expect(processor).to be_failure
-      expect(processor.value).to eq(:stream_processing_failed)
+      expect(processor).to eq Failure(:stream_processing_failed)
     end
   end
 end

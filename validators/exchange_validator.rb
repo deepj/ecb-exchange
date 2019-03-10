@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ExchangeValidator = Dry::Validation.Form do
+ExchangeValidator = Dry::Validation.Params do
   configure do
     option :date_since, 2000
 

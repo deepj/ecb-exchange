@@ -9,7 +9,7 @@ class ExchangeService < ApplicationService
   def validate(input)
     input = input.is_a?(Hash) ? input : {}
     validator = ExchangeValidator.(input)
-    validator.success? ? Right(validator.output) : Left(validator.messages)
+    validator.success? ? Success(validator.output) : Failure(validator.messages)
   end
 
   def convert(input)
@@ -18,9 +18,9 @@ class ExchangeService < ApplicationService
                                           .get { round(input[:amount] / rate, 4) }
 
     if converted_amount
-      Right(amount: converted_amount.to_s('F'), date: input[:date].to_s)
+      Success(amount: converted_amount.to_s('F'), date: input[:date].to_s)
     else
-      Left("#{input[:amount].to_s('F')} USD cannot be converted because any exchange rate couldn't be found in #{input[:date]}")
+      Failure("#{input[:amount].to_s('F')} USD cannot be converted because any exchange rate couldn't be found in #{input[:date]}")
     end
   end
 end

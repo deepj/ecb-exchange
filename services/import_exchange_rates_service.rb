@@ -11,15 +11,15 @@ class ImportExchangeRatesService < ApplicationService
   step :persist
 
   def fetch(_input)
-    ECBExchangeRates::Fetcher.new.call
+    ECBExchangeRates::Fetcher.new.()
   end
 
   def process(input)
-    ECBExchangeRates::Processor.new.call(input)
+    ECBExchangeRates::Processor.new.(input)
   end
 
   def persist(input)
-    temporary_table = :"exchange_rates_import_#{SecureRandom.hex(4)}"
+    temporary_table = :"exchange_rates_import_#{SecureRandom.hex(5)}"
 
     DB.transaction(rollback: :reraise) do
       DB.run %(CREATE TEMPORARY TABLE "#{temporary_table}" (LIKE "exchange_rates") ON COMMIT DROP)
@@ -27,8 +27,8 @@ class ImportExchangeRatesService < ApplicationService
       DB[:exchange_rates].insert_conflict.insert(DB[temporary_table])
     end
 
-    Right(true)
+    Success(true)
   rescue Sequel::Error
-    Left(:persistence_failed)
+    Failure(:persistence_failed)
   end
 end

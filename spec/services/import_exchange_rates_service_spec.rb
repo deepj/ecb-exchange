@@ -3,7 +3,7 @@
 require 'services/import_exchange_rates_service'
 
 RSpec.describe ImportExchangeRatesService, type: :service do
-  subject(:service) { described_class.new.call(nil) }
+  subject(:service) { described_class.new.call() }
 
   let(:fake_csv_stream) do
     <<~CSV.each_line.lazy
@@ -31,12 +31,12 @@ RSpec.describe ImportExchangeRatesService, type: :service do
     CSV
   end
 
-  before { allow_any_instance_of(described_class).to receive(:fetch).and_return(Dry::Monads.Right(fake_csv_stream)) }
+  before { allow_any_instance_of(described_class).to receive(:fetch).and_return(Dry::Monads.Success(fake_csv_stream)) }
 
   it 'imports ECB exchange rates successfully' do
     expect { service }.to change { DB[:exchange_rates].count }.from(0).to(10)
     expect(service).to be_success
-    expect(service.value).to be true
+    expect(service.value!).to be true
   end
 
   it 'does not duplicite exchange rates' do
@@ -76,13 +76,13 @@ RSpec.describe ImportExchangeRatesService, type: :service do
     end
 
     before do
-      allow(service).to         receive(:fetch).and_return(Dry::Monads.Right(fake_csv_stream))
-      allow(another_service).to receive(:fetch).and_return(Dry::Monads.Right(another_fake_csv_stream))
+      allow(service).to         receive(:fetch).and_return(Success(fake_csv_stream))
+      allow(another_service).to receive(:fetch).and_return(Success(another_fake_csv_stream))
     end
 
     it 'does not allow to replace them by new ones' do
-      expect { service.call(nil) }.to change { DB[:exchange_rates].count }.from(0).to(10)
-      expect { service.call(nil) }.not_to change { DB[:exchange_rates].all }
+      expect { service.call }.to change { DB[:exchange_rates].count }.from(0).to(10)
+      expect { service.call }.not_to change { DB[:exchange_rates].all }
 
       expect(DB[:exchange_rates].all).not_to contain_exactly(
         a_hash_including(date: Date.parse('2017-09-01'), rate: BigDecimal('1.2920')),
@@ -105,7 +105,7 @@ RSpec.describe ImportExchangeRatesService, type: :service do
     it 'returns persistence_failed error code' do
       expect { service }.not_to change { DB[:exchange_rates].count }
       expect(service).to be_failure
-      expect(service.value).to eq(:persistence_failed)
+      expect(service).to eq Failure(:persistence_failed)
     end
   end
 end

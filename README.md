@@ -42,22 +42,23 @@ suitable.
 * Include an easy way to download and update the latest values. For example a rake task.
 * Make the updating procedure idempotent. Eg. such that it can be ran multiple times
 without it being destructive or adding duplicate records.
-* Write tests preferably with Rspec.
+* Write tests preferably with RSpec.
 
 ## Requirements
 
-- Ruby 2.4.2
+- Ruby 2.6.1
 - Bundler
 - PostgreSQL (9.6+)
 
 ## Run and test
 
-Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 9.6.5 using Homebrew)
+Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 11.2 via Homebrew)
+As a default user is expected default **postgres** user
+
 
 ```
-createuser -U postgres mh
-createdb -U postgres -O mh ecb-exchange_development
-createdb -U postgres -O mh ecb-exchange_test
+createdb ecb-exchange_development
+createdb ecb-exchange_test
 ```
 
 After then, just run these two commands:

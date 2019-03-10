@@ -2,6 +2,10 @@
 
 # Only for local development purposes
 
-createuser -e -U postgres mh
-createdb -U postgres -O mh ecb-exchange_development
-createdb -U postgres -O mh ecb-exchange_test
+echo 'Creating databases for development and test'
+createdb ecb-exchange_development
+createdb ecb-exchange_test
+
+echo 'Migrating databases for development and test'
+bundle exec rake db:migrate
+bundle exec rake db:migrate RACK_ENV=test

@@ -1,0 +1,21 @@
+version: '3'
+
+service:
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgres://postgres:posgtres@postgres:5432/ecb-exchange
+    ports:
+      - 9292:9292
+
+  postgres:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecb-exchange
+    ports:
+      - 5432:5432
+
+volumes:
+  pgdata:
