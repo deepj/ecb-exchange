@@ -10,8 +10,8 @@ class ExchangeService
 
   def validate(input)
     input = input.is_a?(Hash) ? input : {}
-    validator = ExchangeValidator.(input)
-    validator.success? ? Success(validator.output) : Failure(validator.messages)
+
+    ExchangeValidator.(input).to_monad
   end
 
   def convert(input)

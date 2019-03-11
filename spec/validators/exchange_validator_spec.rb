@@ -27,7 +27,8 @@ RSpec.describe ExchangeValidator, type: :validator do
                                                                                         matching('must be greater than 0')])
       expect(validator.(amount: nil, date: '2011-03-05').messages).to  include(amount: [matching('must be filled'),
                                                                                         matching('must be greater than 0')])
-
+      expect(validator.(amount: '-', date: '1999-03-05').messages).to  include(amount: [matching('must be a decimal'),
+                                                                                        matching('must be greater than 0')])
       expect(validator.({}).messages).to include(amount: [matching('is missing'), matching('must be greater than 0')],
                                                  date: [matching('is missing')])
     end

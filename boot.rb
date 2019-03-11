@@ -11,3 +11,5 @@ Bundler.require(:default, ENV['RACK_ENV'])
 
 require_relative 'db'
 
+# Settings
+Dry::Validation.load_extensions(:monads)
