@@ -11,6 +11,8 @@ services:
       - 9292:9292
     depends_on:
       - postgres
+    networks:
+      - ecb-exchange
 
   postgres:
     image: postgres:11-alpine
@@ -22,6 +24,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      - ecb-exchange
+
+networks:
+  ecb-exchange:
 
 volumes:
   pgdata:

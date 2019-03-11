@@ -1,11 +1,10 @@
 #!/bin/sh
 
+echo 'Running PostgreSQL'
+docker-compose up -d postgres
+
 echo 'Building docker image'
 docker-compose build app
-
-echo 'Running PostgreSQL'
-docker-compose up postgres -d
-sleep 5
 
 echo 'Importing ECB exchange rates'
 docker-compose run app rake db:migrate import
