@@ -1,19 +1,24 @@
 version: '3'
 
-service:
+services:
   app:
     build: .
+    command: bin/server
     environment:
-      DATABASE_URL: postgres://postgres:posgtres@postgres:5432/ecb-exchange
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/ecb-exchange_production
     ports:
       - 9292:9292
+    depends_on:
+      - postgres
 
   postgres:
     image: postgres:11-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ecb-exchange
+      POSTGRES_DB: ecb-exchange_production
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - 5432:5432
 
