@@ -1,8 +1,14 @@
 #!/bin/sh
 
-echo 'Building app docker image'
+echo 'Building docker image'
 docker-compose build app
+
+echo 'Running PostgreSQL'
+docker-compose up postgres -d
 sleep 5
 
 echo 'Importing ECB exchange rates'
 docker-compose run app rake db:migrate import
+
+echo 'Closing all running images'
+docker-compose down
