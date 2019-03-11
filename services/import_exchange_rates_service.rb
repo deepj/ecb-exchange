@@ -5,7 +5,9 @@ require 'securerandom'
 require 'lib/ecb_exchange_rates/fetcher'
 require 'lib/ecb_exchange_rates/processor'
 
-class ImportExchangeRatesService < ApplicationService
+class ImportExchangeRatesService
+  include Dry::Transaction
+
   step :fetch
   step :process
   step :persist

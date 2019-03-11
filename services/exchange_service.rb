@@ -2,7 +2,9 @@
 
 require 'validators/exchange_validator'
 
-class ExchangeService < ApplicationService
+class ExchangeService
+  include Dry::Transaction
+
   step :validate
   step :convert
 

@@ -32,11 +32,15 @@ module ECBExchangeRates
     # NOTE: This check could be more precise but this would be good enough for this assignment
     def csv_stream?(stream)
       content_type = stream.data.dig(:headers, 'Content-Type')
+
       return false unless content_type == 'text/csv'
+
       # Look for the valid header in the first 150 bytes of the stream
       return false unless stream.read(150).include?(VALID_ECB_HEADER)
-      stream.rewind
+
       true
+    ensure
+      stream.rewind
     end
   end
 end

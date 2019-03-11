@@ -11,4 +11,3 @@ Bundler.require(:default, ENV['RACK_ENV'])
 
 require_relative 'db'
 
-Dir[File.join(__dir__, 'globals', '**', '*.rb')].reverse_each(&method(:require))
