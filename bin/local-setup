@@ -3,8 +3,8 @@
 # Only for local development purposes
 
 echo 'Creating databases for development and test'
-createdb ecb-exchange_development
-createdb ecb-exchange_test
+createdb -U postgres ecb-exchange_development
+createdb -U postgres ecb-exchange_test
 
 echo 'Migrating databases for development and test'
 bundle exec rake db:migrate

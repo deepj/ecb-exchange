@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo 'Building app docker image'
 docker-compose build app
 sleep 5
+
+echo 'Importing ECB exchange rates'
 docker-compose run app rake db:migrate import
