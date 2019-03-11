@@ -34,7 +34,7 @@ RSpec.describe ExchangeService, type: :service do
     it 'returns an error validation message' do
       expect(service).to be_failure
       expect(service.failure).to include(date: [matching('is missing')],
-                                       amount: [matching('is missing'), matching('must be greater than 0')])
+                                         amount: [matching('is missing'), matching('must be greater than 0')])
     end
   end
 

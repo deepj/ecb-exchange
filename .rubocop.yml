@@ -3,6 +3,7 @@ AllCops:
   TargetRubyVersion: 2.6
 
   Include:
+    - '**/*/*.rb'
     - '**/Rakefile'
     - '**/config.ru'
 
@@ -15,6 +16,14 @@ Documentation:
 Bundler/OrderedGems:
   Enabled: false
 
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Lint/Debugger:
+  Exclude:
+    - 'prototype.rb'
+
 Style/SymbolArray:
   Enabled: true
 
@@ -23,6 +32,9 @@ Style/LambdaCall:
 
 Style/FormatStringToken:
   Enabled: false
+
+Metrics/AbcSize:
+  Max: 25
 
 Metrics/LineLength:
   Max: 140
@@ -33,3 +45,6 @@ Metrics/BlockLength:
     - 'spec/**/*_spec.rb'
     - 'spec/spec_helper.rb'
     - 'spec/support/**/*.rb'
+
+Naming/MemoizedInstanceVariableName:
+  EnforcedStyleForLeadingUnderscores: required

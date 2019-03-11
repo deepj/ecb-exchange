@@ -3,7 +3,7 @@
 require 'services/import_exchange_rates_service'
 
 RSpec.describe ImportExchangeRatesService, type: :service do
-  subject(:service) { described_class.new.call() }
+  subject(:service) { described_class.new.() }
 
   let(:fake_csv_stream) do
     <<~CSV.each_line.lazy
