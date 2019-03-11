@@ -1,64 +1,23 @@
 # ECB Exchange
 
-## Introduction
-
-European Central Bank provides daily exchange rates for converting US Dollars to Euros. The CSV file for up-to-date exchange rates can be downloaded from:
-
-http://sdw.ecb.europa.eu/quickviewexport.do?SERIES_KEY=120.EXR.D.USD.EUR.SP00.A&type=csv
-
-The file looks roughly like below. (The first number here denotes line number, not in actual file).
-
-```
-Data Source in SDW: null
-,EXR.D.USD.EUR.SP00.A
-,"ECB reference exchange rate, US dollar/Euro, 2:15 pm (C.E.T.)"
-Collection:,Average of observations through period (A)
-Period\Unit:,[US dollar ]
-2016-08-18,1.1321
-2016-08-17,1.1276
-2016-08-16,1.1295
-2016-08-15,1.1180
-2016-08-12,1.1158
-2016-08-11,1.1153
-2016-08-10,1.1184
-```
-
-Build an utility that can be used to convert an USD value to Euros on any date since year 2000.
-To do this you should:
-
-1. Have the application download, parse and store the exchange rates to a database
-2. Have a class to handle conversion of a USD value - date pair to Euro value.
-   E.g. ExchangeRateConverter.convert(120, '2011-03-05')
-
-Should return what 120 USD was in euros on March 5, 2011. Note that the ECB file only includes days
-when they had agreed on the exchange rates - these are typically non-holiday weekdays. To convert values
-on weekends and holidays you should use the previous available exchange rate.
-
-## Specs
-
-* Build the assignment in Ruby. You can use Rails, but it is not required.
-* You can use any database to store the exchange rates. Choose something sensible and
-suitable.
-* Include an easy way to download and update the latest values. For example a rake task.
-* Make the updating procedure idempotent. Eg. such that it can be ran multiple times
-without it being destructive or adding duplicate records.
-* Write tests preferably with RSpec.
+This application is a simple "microservice" based on Roda, Sequel and dry-rb gems. For detailed description application, read [ASSIGNMENT.md](ASSIGNMENT.md).
 
 ## Requirements
 
 - Ruby 2.6.1
 - Bundler
 - PostgreSQL (9.6+)
+- Docker (optional)
 
-## Run and test
+## Setup for local development
 
-Setup a database for this prototype using this commands (tested on Mac with installed PostgreSQL 11.2 via Homebrew)
-As a default user is expected default **postgres** user
+Setup a database using the following commands (tested on Mac with installed PostgreSQL 11.2 via Homebrew)
+As a default user is expected default **postgres** user. You can skip these steps by running `bin/local-setup`.
 
 
 ```
-createdb ecb-exchange_development
-createdb ecb-exchange_test
+createdb -U postgres ecb-exchange_development
+createdb -U postgress ecb-exchange_test
 ```
 
 After then, just run these two commands:
@@ -71,27 +30,23 @@ bundle exec rake db:migrate RACK_ENV=test
 The current ECB exchange rate list can be imported using this rake task:
 
 ```
-rake import
+bundle exec rake import
 ```
 
-RSpec tests can be run as usual (please, run `bundle exec rake db:migrate RACK_ENV=test` before that)
+## Run and test locally
 
-```
-bundle exec rspec
-```
-
-In case of API only POST /exchanges is treated against some user mistakes. It's not bullet-proof API implementation.
-
-API can be run:
+API server can be run (make sure you run `bundle install` before that):
 
 ```
 bundle exec rackup
 ```
 
-Then just call
+The server is running on the local 9292 PORT by default. There is only one endpoint available `POST /exchange`. It requires a message in a JSON message containing two params `amount` (decimal) and `date` (date in YYYY-MM-DD format).
+
+For testing, you can try the following request
 
 ```
-curl -v -XPOST http://localhost:9292/exchange -d '{ "amount": 120.0, "date": "2011-03-05" }' -H "Content-Type: application/json"
+curl -v http://localhost:9292/exchange -d '{ "amount": 120.0, "date": "2011-03-05" }' -H "Content-Type: application/json"
 ```
 
 There is an application console:
@@ -100,6 +55,34 @@ There is an application console:
 rake console
 ```
 
-There is also a class for the exchange -> `ExchangeService`. In the console, just call `ExchangeService.new.call(amount: 120, date: '2011-03-15')`.
+There is also a class for the exchange -> `ExchangeService`. In the console, just call `ExchangeService.new.(amount: 120, date: '2011-03-15')`.
 
-For import, use `ImportExchangeRatesService.new.call(nil)` (NOTE: the `nil` is important)
+For import, use `ImportExchangeRatesService.new.()`
+
+## Docker
+
+The application is dockerized which is suitable for running on the production environment.
+
+Build Docker image:
+
+```
+bin/build-docker
+```
+
+Run the application
+
+```
+docker-compose up
+```
+
+## Specs
+
+RSpec tests can be run as usual (please, make sure you run `bundle exec rake db:migrate RACK_ENV=test` before that)
+
+```
+bundle exec rspec
+```
+
+# Prototype
+
+The first iteration of application is captured in `prototype.rb`.

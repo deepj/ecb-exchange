@@ -5,6 +5,7 @@ services:
     build: .
     command: bin/server
     environment:
+      RACK_ENV: production
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/ecb-exchange_production
     ports:
       - 9292:9292
